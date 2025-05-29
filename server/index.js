@@ -8,8 +8,27 @@ const userRouter = require('./routes/userRouter'); // Import user router
 const app = express();
 const PORT = process.env.PORT || 3001; // Backend server port
 
-// Enable CORS for all routes
-app.use(cors());
+// Configure CORS
+const allowedOrigins = [
+  'https://smashorpass-3oam.vercel.app', // Replace with your actual Vercel URL
+  'http://localhost:5173', // Common Vite local dev URL
+  // Add any other origins you need to allow
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true, // If you plan to use cookies or authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+}));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
