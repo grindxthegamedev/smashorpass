@@ -4,6 +4,9 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator'; 
 import './Auth.css';
 
+// Define API_BASE_URL using the Vite environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function Signup({ onClose, onSwitchToLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +31,7 @@ function Signup({ onClose, onSwitchToLogin }) {
       // onClose(); // Close modal on success
 
       // Call your backend:
-      const response = await fetch('/api/users/register', { 
+      const response = await fetch(`${API_BASE_URL}/users/register`, { // Use the API_BASE_URL here
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, displayName })
