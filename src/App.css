@@ -1,0 +1,91 @@
+/* App Header Styles */
+.app-header {
+  position: fixed; /* Or absolute, depending on scroll behavior */
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* Pushes h1 left, buttons right */
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(20, 20, 30, 0.8); /* Dark semi-transparent background */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 1000; /* Ensure header is above cards but below modals */
+  color: white;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5em; /* Adjust as needed */
+  font-weight: bold;
+}
+
+.auth-buttons-header {
+  display: flex;
+  gap: 10px; /* Space between login/signup buttons */
+}
+
+.header-auth-button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.header-auth-button:hover {
+  background-color: #0056b3;
+}
+
+.mute-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.mute-button:hover {
+  opacity: 0.8;
+}
+
+.user-greeting {
+  color: #fff;
+  margin-right: 15px;
+  font-size: 0.9em;
+}
+
+.logout-button {
+  background-color: #dc3545; /* A red color for logout */
+}
+
+.logout-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+.profile-link-button {
+  /* Style to match .header-auth-button */
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  text-decoration: none; /* Remove underline from Link */
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  margin-left: 10px; /* Space from logout button */
+}
+
+.profile-link-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Ensure content below fixed header is not obscured */
+.app-container {
+  padding-top: 70px; /* Adjust based on actual header height */
+}

@@ -1,0 +1,187 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh; /* Adjust as needed, ensures it takes up significant screen space */
+  padding: 20px;
+  background-color: #f4f7f6; /* Light background for the page */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Styles for when auth-container is used as a modal */
+.auth-container.modal-active {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent backdrop */
+  z-index: 1001; /* Higher than app-header */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Padding for smaller screens, form itself has padding */
+}
+
+.auth-form-wrapper {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeInScaleUp 0.5s ease-out forwards;
+  position: relative; /* Needed for absolute positioning of close button */
+}
+
+/* Close button for modal */
+.auth-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px; /* Make it larger */
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.auth-close-button:hover {
+  color: #333;
+}
+
+.auth-form-wrapper h2 {
+  color: #333;
+  margin-bottom: 25px;
+  font-weight: 600;
+  font-size: 28px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.auth-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.auth-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.auth-switch {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #555;
+}
+
+.auth-switch a,
+.auth-switch-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-switch a:hover,
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Password Strength Indicator Styles */
+.password-strength-meter {
+  margin-top: 10px;
+}
+
+.password-strength-meter-bar-container {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #e9ecef; /* Background for the unfilled part */
+}
+
+.password-strength-meter-segment {
+  flex-grow: 1;
+  transition: background-color 0.3s ease;
+}
+
+/* .password-strength-meter-segment:not(:last-child) { */
+  /* No margin needed if using flex-grow and segments fill up based on strength */
+/* } */
+
+.password-strength-meter-label {
+  font-size: 0.8rem;
+  margin-top: 5px;
+  text-align: right;
+}
+
+@keyframes fadeInScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
