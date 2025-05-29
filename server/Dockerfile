@@ -18,4 +18,8 @@ COPY . .
 # EXPOSE will be handled by Cloud Run based on the PORT your app listens to.
 
 # Define the command to run your app
+# CMD [ "node", "index.js" ] 
+CMD [ "ls", "-la", "/workspace" ] # Temporary: List files for debugging
+
+# Define the command to run your app
 CMD [ "node", "index.js" ] 
