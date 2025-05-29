@@ -75,6 +75,7 @@ function App() {
     }
     return MEDIA_TYPE_OPTIONS.VIDEOS_PHOTOS;
   });
+  const [actionFeedback, setActionFeedback] = useState({ active: false, type: '', key: 0 }); // New state
 
   const videoRef = useRef(null);
   const currentIndexRef = useRef(0);
@@ -426,20 +427,24 @@ function App() {
 
   const handleButtonSmash = () => { 
     if (!isLoading && currentCard) {
-      handleAction('Smash'); // Call action immediately
-      triggerSwipe('right'); // Then start animation
+      setActionFeedback(prev => ({ active: true, type: 'smash', key: prev.key + 1 })); // Trigger feedback
+      handleAction('Smash');
+      triggerSwipe('right');
+      setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700); // Fade out
     }
   };
   const handleButtonPass = () => { 
     if (!isLoading && currentCard) {
-      handleAction('Pass'); // Call action immediately
-      triggerSwipe('left'); // Then start animation
+      setActionFeedback(prev => ({ active: true, type: 'pass', key: prev.key + 1 })); // Trigger feedback
+      handleAction('Pass');
+      triggerSwipe('left');
+      setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700); // Fade out
     }
   };
   const handleButtonFavorite = () => {
     if (!currentCard || isLoading) return;
-    handleAction('Favorite'); // Call action immediately
-    // Start animation (bounce)
+    setActionFeedback(prev => ({ active: true, type: 'favorite', key: prev.key + 1 })); // Trigger feedback
+    handleAction('Favorite'); 
     api.start({
       to: async (next) => {
         await next({ y: -30, scale: 1.05, config: { tension: 400 }});
@@ -452,28 +457,27 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (isLoading || !currentCard || isLoginModalOpen || isSignupModalOpen || isPreferencesModalOpen) {
-        // Don't process key events if loading, no card, or modal is open
         return;
       }
+      let actionTypeForFeedback = ''; // Variable to hold feedback type
 
       switch (event.key) {
         case 'ArrowLeft':
-          event.preventDefault(); // Prevent default browser action for arrow keys
-          console.log('Keyboard: ArrowLeft -> Pass');
+          event.preventDefault(); 
+          actionTypeForFeedback = 'pass'; // Set feedback type
           handleAction('Pass');
-          triggerSwipe('left'); // Also trigger swipe animation
+          triggerSwipe('left'); 
           break;
         case 'ArrowRight':
           event.preventDefault();
-          console.log('Keyboard: ArrowRight -> Smash');
+          actionTypeForFeedback = 'smash'; // Set feedback type
           handleAction('Smash');
-          triggerSwipe('right'); // Also trigger swipe animation
+          triggerSwipe('right'); 
           break;
         case 'ArrowDown':
           event.preventDefault();
-          console.log('Keyboard: ArrowDown -> Favorite');
+          actionTypeForFeedback = 'favorite'; // Set feedback type
           handleAction('Favorite');
-          // Trigger favorite animation (bounce)
           api.start({
             to: async (next) => {
               await next({ y: -30, scale: 1.05, config: { tension: 400 }});
@@ -483,6 +487,11 @@ function App() {
           break;
         default:
           break;
+      }
+
+      if (actionTypeForFeedback) { // If a feedback type was set
+        setActionFeedback(prev => ({ active: true, type: actionTypeForFeedback, key: prev.key + 1 }));
+        setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700);
       }
     };
 
@@ -819,7 +828,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={
-          <div className={`flex flex-col items-center justify-center min-h-screen text-white p-4 select-none overflow-hidden relative lustful-bg`}>
+          <div className={`flex flex-col items-center justify-center min-h-screen text-white p-4 select-none overflow-hidden relative lustful-bg app-container`}>
             {/* REMOVE Preferences Icon from here */}
             {/* 
             <button 
@@ -875,11 +884,17 @@ function App() {
                </div>
              )}
 
+            {/* ACTION FEEDBACK BACKGROUND - NEW */}
+            <div
+              key={actionFeedback.key}
+              className={`action-feedback-bg ${actionFeedback.active ? 'active' : ''} ${actionFeedback.type}`}
+            ></div>
+            
             {currentCard && (
               <animated.div
                 {...bind(currentCard.name)}
                 style={springProps}
-                className={`w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl shadow-2xl overflow-hidden aspect-[3/4.5] flex flex-col cursor-grab active:cursor-grabbing touch-pan-y select-none relative ${CARD_GRADIENT} border-2 border-pink-900/30`}
+                className={`w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl shadow-2xl overflow-hidden aspect-[3/4.5] flex flex-col cursor-grab active:cursor-grabbing touch-pan-y select-none relative z-10 ${CARD_GRADIENT} border-2 border-pink-900/30`}
                 key={currentIndexRef.current}
               >
                 <div className="relative w-full h-[80%] flex-grow bg-black">
