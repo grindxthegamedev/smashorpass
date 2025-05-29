@@ -75,7 +75,6 @@ function App() {
     }
     return MEDIA_TYPE_OPTIONS.VIDEOS_PHOTOS;
   });
-  const [actionFeedback, setActionFeedback] = useState({ active: false, type: '', key: 0 }); // New state
 
   const videoRef = useRef(null);
   const currentIndexRef = useRef(0);
@@ -103,6 +102,21 @@ function App() {
 
   // Add shuffle seed to state
   const [shuffleSeed, setShuffleSeed] = useState(Date.now());
+
+  // Add these new state variables for the background animation
+  const [swipeDirection, setSwipeDirection] = useState(null); // 'left', 'right', or null
+  const [showBackground, setShowBackground] = useState(false);
+
+  // Add a new useSpring for the background animation
+  const backgroundSpringProps = useSpring({
+    opacity: showBackground ? 1 : 0,
+    config: { tension: 280, friction: 60 },
+    onRest: () => {
+      if (showBackground) {
+        setShowBackground(false);
+      }
+    }
+  });
 
   // Effect for initial card load ON MOUNT
   useEffect(() => {
@@ -386,10 +400,14 @@ function App() {
     if (!currentCard) return;
     const x = (direction === 'right' ? 1 : -1) * (window.innerWidth + 200);
     const rot = (direction === 'right' ? 1 : -1) * 15;
+    
+    // Set the swipe direction and show the background
+    setSwipeDirection(direction);
+    setShowBackground(true);
+    
     api.start({
       to: { x, rotateZ: rot, scale: 1.1 },
-      config: { friction: 50, tension: 280 }, // Faster animation: lower friction, higher tension
-      // onRest removed: handleAction is now called upfront by button handlers
+      config: { friction: 50, tension: 280 },
     });
   }, [api, currentCard]);
 
@@ -427,57 +445,59 @@ function App() {
 
   const handleButtonSmash = () => { 
     if (!isLoading && currentCard) {
-      setActionFeedback(prev => ({ active: true, type: 'smash', key: prev.key + 1 })); // Trigger feedback
-      handleAction('Smash');
-      triggerSwipe('right');
-      setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700); // Fade out
+      setSwipeDirection('right'); // Set direction first
+      setShowBackground(true); // Show background effect
+      handleAction('Smash'); // Call action 
+      triggerSwipe('right'); // Then start animation
     }
   };
+  
   const handleButtonPass = () => { 
     if (!isLoading && currentCard) {
-      setActionFeedback(prev => ({ active: true, type: 'pass', key: prev.key + 1 })); // Trigger feedback
-      handleAction('Pass');
-      triggerSwipe('left');
-      setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700); // Fade out
+      setSwipeDirection('left'); // Set direction first
+      setShowBackground(true); // Show background effect
+      handleAction('Pass'); // Call action
+      triggerSwipe('left'); // Then start animation
     }
   };
+  
   const handleButtonFavorite = () => {
     if (!currentCard || isLoading) return;
-    setActionFeedback(prev => ({ active: true, type: 'favorite', key: prev.key + 1 })); // Trigger feedback
-    handleAction('Favorite'); 
+    handleAction('Favorite'); // Call action immediately
+    // Start animation (bounce)
     api.start({
       to: async (next) => {
         await next({ y: -30, scale: 1.05, config: { tension: 400 }});
         await next({ y: 0, scale: 1, config: { tension: 400 }});
       },
-      // onRest removed: handleAction is now called upfront
     });
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (isLoading || !currentCard || isLoginModalOpen || isSignupModalOpen || isPreferencesModalOpen) {
+        // Don't process key events if loading, no card, or modal is open
         return;
       }
-      let actionTypeForFeedback = ''; // Variable to hold feedback type
 
       switch (event.key) {
         case 'ArrowLeft':
-          event.preventDefault(); 
-          actionTypeForFeedback = 'pass'; // Set feedback type
+          event.preventDefault(); // Prevent default browser action for arrow keys
+          console.log('Keyboard: ArrowLeft -> Pass');
           handleAction('Pass');
-          triggerSwipe('left'); 
+          triggerSwipe('left'); // Also trigger swipe animation
           break;
         case 'ArrowRight':
           event.preventDefault();
-          actionTypeForFeedback = 'smash'; // Set feedback type
+          console.log('Keyboard: ArrowRight -> Smash');
           handleAction('Smash');
-          triggerSwipe('right'); 
+          triggerSwipe('right'); // Also trigger swipe animation
           break;
         case 'ArrowDown':
           event.preventDefault();
-          actionTypeForFeedback = 'favorite'; // Set feedback type
+          console.log('Keyboard: ArrowDown -> Favorite');
           handleAction('Favorite');
+          // Trigger favorite animation (bounce)
           api.start({
             to: async (next) => {
               await next({ y: -30, scale: 1.05, config: { tension: 400 }});
@@ -487,11 +507,6 @@ function App() {
           break;
         default:
           break;
-      }
-
-      if (actionTypeForFeedback) { // If a feedback type was set
-        setActionFeedback(prev => ({ active: true, type: actionTypeForFeedback, key: prev.key + 1 }));
-        setTimeout(() => setActionFeedback(prev => ({ ...prev, active: false })), 700);
       }
     };
 
@@ -828,7 +843,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={
-          <div className={`flex flex-col items-center justify-center min-h-screen text-white p-4 select-none overflow-hidden relative lustful-bg app-container`}>
+          <div className={`flex flex-col items-center justify-center min-h-screen text-white p-4 select-none overflow-hidden relative lustful-bg`}>
             {/* REMOVE Preferences Icon from here */}
             {/* 
             <button 
@@ -884,18 +899,38 @@ function App() {
                </div>
              )}
 
-            {/* ACTION FEEDBACK BACKGROUND - NEW */}
-            <div
-              key={actionFeedback.key}
-              className={`action-feedback-bg ${actionFeedback.active ? 'active' : ''} ${actionFeedback.type}`}
-            ></div>
-            
+            {/* Add the animated background gradient */}
+            {swipeDirection && (
+              <animated.div 
+                style={{
+                  ...backgroundSpringProps,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 1,
+                  pointerEvents: 'none' // So it doesn't interfere with interactions
+                }}
+                className={`${
+                  swipeDirection === 'left'
+                    ? 'bg-gradient-to-r from-red-600/70 to-transparent'
+                    : swipeDirection === 'right'
+                      ? 'bg-gradient-to-l from-green-600/70 to-transparent'
+                      : ''
+                }`}
+              />
+            )}
+
             {currentCard && (
               <animated.div
-                {...bind(currentCard.name)}
-                style={springProps}
-                className={`w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl shadow-2xl overflow-hidden aspect-[3/4.5] flex flex-col cursor-grab active:cursor-grabbing touch-pan-y select-none relative z-10 ${CARD_GRADIENT} border-2 border-pink-900/30`}
-                key={currentIndexRef.current}
+                {...bind(currentCard.name)} 
+                style={{
+                  ...springProps,
+                  zIndex: 2, // Make sure card is above the background
+                }}
+                className={`w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl shadow-2xl overflow-hidden aspect-[3/4.5] flex flex-col cursor-grab active:cursor-grabbing touch-pan-y select-none relative ${CARD_GRADIENT} border-2 border-pink-900/30`}
+                key={currentIndexRef.current} 
               >
                 <div className="relative w-full h-[80%] flex-grow bg-black">
                   {isLoading && (

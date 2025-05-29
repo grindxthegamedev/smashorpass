@@ -88,34 +88,4 @@
 /* Ensure content below fixed header is not obscured */
 .app-container {
   padding-top: 70px; /* Adjust based on actual header height */
-  position: relative; /* Add if not already present or handled by a similar parent */
-}
-
-/* ACTION FEEDBACK STYLES - NEW */
-.action-feedback-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  z-index: 1; /* Ensure it's behind the card (card should be z-index > 1) */
-  pointer-events: none; /* Make sure it doesn't interfere with card interactions */
-}
-
-.action-feedback-bg.active {
-  opacity: 0.6; /* Adjust max opacity as desired */
-}
-
-.action-feedback-bg.pass {
-  background: linear-gradient(to right, rgba(220, 38, 38, 0.7), transparent);
-}
-
-.action-feedback-bg.smash {
-  background: linear-gradient(to left, rgba(34, 197, 94, 0.7), transparent);
-}
-
-.action-feedback-bg.favorite {
-  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.6), transparent 70%);
 }
