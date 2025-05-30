@@ -4,22 +4,20 @@ FROM node:18-slim
 # Set the working directory in the container
 WORKDIR /workspace
 
-# Copy package.json and package-lock.json (or npm-shrinkwrap.json)
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install production dependencies
 RUN npm ci --only=production
 
+# Directly copy the service account key to the workspace root
+COPY config/serviceAccountKey.json /workspace/serviceAccountKey.json
+
+# Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the new path
+ENV GOOGLE_APPLICATION_CREDENTIALS=/workspace/serviceAccountKey.json
+
 # Bundle app source
 COPY . .
-
-# Your app binds to port 3001 (or process.env.PORT)
-# Cloud Run automatically uses the PORT env variable (default 8080)
-# EXPOSE will be handled by Cloud Run based on the PORT your app listens to.
-
-# Define the command to run your app
-# CMD [ "node", "index.js" ] 
-CMD [ "ls", "-la", "/workspace" ] # Temporary: List files for debugging
 
 # Define the command to run your app
 CMD [ "node", "index.js" ] 

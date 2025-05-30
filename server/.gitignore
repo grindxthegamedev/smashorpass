@@ -15,6 +15,3 @@ yarn-error.log*
 .idea
 .vscode
 *.swp
-
-# Firebase Admin SDK service account key
-config/serviceAccountKey.json
