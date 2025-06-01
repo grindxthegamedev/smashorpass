@@ -210,7 +210,7 @@ userRouter.post('/preferences/interact', async (req, res) => {
       // This remains the simple version; characterRouter will use all fields for its dynamic scoring
       data.affinityScore = data.smashCount - data.passCount; 
       // Note: 'favorite' effectively gives +2 to this simple affinityScore.
-
+      
       if (prefDoc.exists) {
         transaction.update(preferenceDocRef, data);
       } else {

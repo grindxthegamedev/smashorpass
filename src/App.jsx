@@ -10,7 +10,7 @@ import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, 
 import './App.css';
 import Login from './components/Auth/Login'; 
 import Signup from './components/Auth/Signup'; 
-import ProfilePage from './components/Profile/ProfilePage';
+import ProfilePage from './components/Profile/ProfilePage'; 
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 const CARDS_TO_PRELOAD = 10;
@@ -524,47 +524,47 @@ function App() {
   }, [setIsMuted]);
 
   const fetchCharacters = useCallback(async (page, limit) => {
-    const queryParams = [
-      `page=${page}`,
+      const queryParams = [
+        `page=${page}`,
       `limit=${limit}`,
       `media_type=${encodeURIComponent(mediaTypePreference)}`,
       `seed=${shuffleSeed}` // Include shuffle seed
-    ];
+      ];
     const excludedIdsString = Array.from(seenCharacterIds).join(',');
     let url = `${API_BASE_URL}/characters`;
-    if (excludedIdsString) {
-      queryParams.push(`exclude_ids=${encodeURIComponent(excludedIdsString)}`);
-    }
-    if (currentUser && currentUser.uid) {
-      queryParams.push(`userId=${encodeURIComponent(currentUser.uid)}`);
-    }
-    const combinedBlacklist = [];
-    if (isGayBlacklistEnabled) combinedBlacklist.push(...GAY_BLACKLIST_TAGS);
-    if (isFutaEnabled) combinedBlacklist.push(...FUTA_BLACKLIST_TAGS);
-    if (isFurryEnabled) combinedBlacklist.push(...FURRY_BLACKLIST_TAGS);
-    if (combinedBlacklist.length) {
-      const unique = Array.from(new Set(combinedBlacklist));
-      queryParams.push(`blacklisted_tags=${encodeURIComponent(unique.join(','))}`);
-    }
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`;
-    }
-    
-    console.log('[App.jsx fetchCharacters] Fetching from:', url);
+      if (excludedIdsString) {
+        queryParams.push(`exclude_ids=${encodeURIComponent(excludedIdsString)}`);
+      }
+      if (currentUser && currentUser.uid) {
+        queryParams.push(`userId=${encodeURIComponent(currentUser.uid)}`);
+      }
+      const combinedBlacklist = [];
+      if (isGayBlacklistEnabled) combinedBlacklist.push(...GAY_BLACKLIST_TAGS);
+      if (isFutaEnabled) combinedBlacklist.push(...FUTA_BLACKLIST_TAGS);
+      if (isFurryEnabled) combinedBlacklist.push(...FURRY_BLACKLIST_TAGS);
+      if (combinedBlacklist.length) {
+        const unique = Array.from(new Set(combinedBlacklist));
+        queryParams.push(`blacklisted_tags=${encodeURIComponent(unique.join(','))}`);
+      }
+      if (queryParams.length > 0) {
+        url += `?${queryParams.join('&')}`;
+      }
+      
+      console.log('[App.jsx fetchCharacters] Fetching from:', url);
     const abortController = new AbortController();
     const response = await fetch(url, { signal: abortController.signal });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    setTotalCharacters(data.totalCharacters || 0);
-    const newCharacters = data.characters.filter(char =>
-      !seenCharacterIds.has(char.name) &&
-      char.name !== currentCard?.name &&
-      !upcomingCards.some(uc => uc.name === char.name)
-    );
-    return newCharacters;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTotalCharacters(data.totalCharacters || 0);
+      const newCharacters = data.characters.filter(char =>
+        !seenCharacterIds.has(char.name) &&
+        char.name !== currentCard?.name &&
+        !upcomingCards.some(uc => uc.name === char.name)
+      );
+      return newCharacters;
   }, [seenCharacterIds, currentCard, upcomingCards, setTotalCharacters, setError, currentUser, isGayBlacklistEnabled, isFutaEnabled, isFurryEnabled, mediaTypePreference, shuffleSeed]);
 
   preloadNextBatchRef.current = useCallback(async () => {
@@ -785,8 +785,8 @@ function App() {
                 </h2>
                 <button onClick={closePreferencesModal} className="text-pink-300 hover:text-pink-100 transition-colors">
                   <X size={28} strokeWidth={2.5} />
-                </button>
-              </div>
+              </button>
+            </div>
 
               {/* Toggles */}
               <div className="space-y-6 mb-8">
@@ -798,23 +798,23 @@ function App() {
                   <div key={label} className="flex items-center justify-between p-3 bg-pink-900/30 rounded-xl">
                     <span className="text-pink-100 font-medium">{label}</span>
                     <label className="switch">
-                      <input
-                        type="checkbox"
+                <input 
+                  type="checkbox" 
                         checked={state}
                         onChange={(e) => setter(e.target.checked)}
                         className="w-11 h-6 rounded-full checked:bg-pink-500 border-2 border-pink-400/50 focus:ring-pink-400"
-                      />
+                />
                       <span className="slider round"></span>
-                    </label>
-                  </div>
+              </label>
+            </div>
                 ))}
-              </div>
+            </div>
 
               {/* Media Type Dropdown */}
               <div className="mb-8">
                 <label className="block text-pink-200 mb-3 text-sm font-medium">Media Preference</label>
-                <select
-                  value={mediaTypePreference}
+                <select 
+                  value={mediaTypePreference} 
                   onChange={(e) => setMediaTypePreference(e.target.value)}
                   className="w-full bg-pink-900/30 border-2 border-pink-500/30 rounded-xl p-3 text-pink-100 
                            focus:ring-2 focus:ring-pink-400 focus:border-transparent custom-scrollbar
@@ -826,10 +826,10 @@ function App() {
                     </option>
                   ))}
                 </select>
-              </div>
+            </div>
 
               <button 
-                onClick={closePreferencesModal}
+                onClick={closePreferencesModal} 
                 className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 rounded-xl 
                          font-bold text-pink-50 hover:from-pink-500 hover:to-purple-500 transition-all
                          shadow-lg hover:shadow-pink-500/20 active:scale-95"
@@ -920,7 +920,7 @@ function App() {
                       : ''
                 }`}
               />
-            )}
+             )}
 
             {currentCard && (
               <animated.div
