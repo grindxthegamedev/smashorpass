@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors'); // Import cors
 const tagRouter = require('./routes/tagRouter');
-const { characterRouter, initializeCharacterCache } = require('./routes/characterRouter'); 
+const { characterRouter, initializeCharacterCache } = require('./routes/characterRouter');
 const { initializeFirebaseAdmin } = require('./services/firebaseAdmin'); // Import Firebase Admin initializer
 const userRouter = require('./routes/userRouter'); // Import user router
+const patreonRouter = require('./routes/patreonRouter'); // Added for Patreon verification
 
 const app = express();
 const PORT = process.env.PORT || 3001; // Backend server port
@@ -38,9 +39,10 @@ app.use(express.urlencoded({ extended: true }));
 initializeFirebaseAdmin();
 
 // Mount routers
-app.use('/api/tags', tagRouter); 
+app.use('/api/tags', tagRouter);
 app.use('/api/characters', characterRouter); // Mount character router
 app.use('/api/users', userRouter); // Mount the user router
+app.use('/api', patreonRouter); // Mount Patreon verification routes
 
 // Basic route for server health check
 app.get('/api/health', (req, res) => {
